@@ -25,6 +25,9 @@ include_once "connection_database.php";
                 <th scope="col">Name</th>
                 <th scope="col">Phone</th>
                 <th scope="col">Email</th>
+                <th>
+
+                </th>
             </tr>
             </thead>
             <tbody>
@@ -47,6 +50,9 @@ include_once "connection_database.php";
                 <td>$name</td>
                 <td>$phone</td>
                 <td>$email</td>
+                <td>
+                <button class='btn btn-danger' data-delete='$id'>Видалити</button>
+                </td>
             </tr>
                 ";
             }
@@ -59,7 +65,62 @@ include_once "connection_database.php";
 
 </main>
 
+<div class="modal" id="dialogDelete" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Підтвердіть операцію</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Ви дійсно бажаєте видалити елемент?</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Скасувати</button>
+                <button type="button" class="btn btn-danger" id="dialogDeleteYes">Видалити</button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script src="js/bootstrap.bundle.min.js"></script>
+<script src ="js/axios.min.js"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const dialogDelete = new bootstrap.Modal("#dialogDelete");
+        const dialogDeleteYes = document.getElementById("dialogDeleteYes");
+        let deleteId=0;
+        dialogDeleteYes.addEventListener("click", function(){
+            const headers = {
+                'Content-Type': 'multipart/form-data', // This header is set automatically by Axios when using FormData
+            };
+            axios.post("/delete.php", {
+                id:deleteId
+            }, {headers}).then(resp => {
+                console.log("Delete is good");
+                window.location.reload();
+            });
+            // console.log("Підтвердили видалення елемента");
+            // dialogDelete.hide();
+
+        });
+
+        const deleteButtons = document.querySelectorAll('[data-delete]')
+        console.log("buttons",deleteButtons);
+
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function(event) {
+
+                const deleteValue = event.target.getAttribute('data-delete');
+                console.log(`Delete item with ID: ${deleteValue}`);
+                deleteId=deleteValue;
+                dialogDelete.show();
+
+            });
+        });
+    });
+</script>
 </body>
 </html>
